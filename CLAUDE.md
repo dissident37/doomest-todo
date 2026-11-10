@@ -24,7 +24,7 @@
 
 - Ноутбук ASUS VivoBook на Windows 11: Ryzen 5 3500U, 8 ГБ RAM (системе доступно около 6). Mac нет.
 - Android Studio и эмулятор не ставим — ноутбук не тянет. Запуск — на S24 через Expo Go, сборка APK — в облаке EAS Build.
-- Node.js 24. Git: коммиты от аккаунта GitHub `dissident37@gmail.com` (задано в настройках репозитория), репозиторий на GitHub — публичный.
+- Node.js 24. Git: коммиты от аккаунта GitHub `dissident37@gmail.com` (задано в настройках репозитория), репозиторий на GitHub — публичный: https://github.com/dissident37/doomest-todo
 
 ## Как со мной работать
 
