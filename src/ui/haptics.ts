@@ -4,8 +4,11 @@ import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 
 function android(type: Haptics.AndroidHaptics, fallback: () => Promise<void>) {
+  // На S24 в Expo Go вибрация пока не ощущается — не разобрано, отложено.
   const run = Platform.OS === 'android' ? Haptics.performAndroidHapticsAsync(type) : fallback();
-  run.catch(() => {});
+  run.catch((e: unknown) => {
+    if (__DEV__) console.warn('[haptics] ошибка', e);
+  });
 }
 
 // Карточка «взялась» для перетаскивания.

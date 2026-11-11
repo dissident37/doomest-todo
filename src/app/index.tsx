@@ -1,18 +1,14 @@
-import { randomUUID } from 'expo-crypto';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View, type FlatList } from 'react-native';
 import { Gesture } from 'react-native-gesture-handler';
 import { LinearTransition, useSharedValue } from 'react-native-reanimated';
-import ReorderableList, {
-  type ReorderableListReorderEvent,
-} from 'react-native-reorderable-list';
+import ReorderableList, { type ReorderableListReorderEvent } from 'react-native-reorderable-list';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { insertByPosition, moveTask, positionAtEnd } from '@/domain/order';
+import { useTasks } from '@/data/TasksProvider';
 import { tasksCountLabel } from '@/domain/plural';
-import { createSampleTasks } from '@/domain/sampleTasks';
-import { makeTask, type Task } from '@/domain/task';
+import type { Task } from '@/domain/task';
 import { useTheme } from '@/theme/useTheme';
 import { AddButton } from '@/ui/AddButton';
 import { TaskRow } from '@/ui/TaskRow';
@@ -21,14 +17,13 @@ import { UndoSnackbar } from '@/ui/UndoSnackbar';
 // Сколько висит плашка «Отменить».
 const UNDO_MS = 5000;
 
-// Прототип главного экрана: тестовые дела в памяти, без SQLite.
 export default function ListScreen() {
   const { colors, sizes } = useTheme();
   const insets = useSafeAreaInsets();
+  const { tasks, add, complete, restore, move } = useTasks();
 
-  const [tasks, setTasks] = useState<Task[]>(() => createSampleTasks(new Date().toISOString()));
+  // Прежняя версия последнего сделанного дела — для «Отменить».
   const [lastDone, setLastDone] = useState<Task | null>(null);
-  const addedCount = useRef(0);
   const listRef = useRef<FlatList<Task>>(null);
 
   const isDragging = useSharedValue(false);
@@ -46,32 +41,25 @@ export default function ListScreen() {
 
   const handleDone = useCallback(
     (id: string) => {
-      const task = tasks.find((t) => t.id === id);
-      if (!task) return;
-      setTasks((prev) => prev.filter((t) => t.id !== id));
-      setLastDone(task);
+      const previous = complete(id);
+      if (previous) setLastDone(previous);
     },
-    [tasks],
+    [complete],
   );
 
   const handleUndo = useCallback(() => {
     if (!lastDone) return;
-    setTasks((prev) => insertByPosition(prev, lastDone));
+    restore(lastDone);
     setLastDone(null);
-  }, [lastDone]);
+  }, [lastDone, restore]);
 
-  const handleReorder = useCallback(({ from, to }: ReorderableListReorderEvent) => {
-    setTasks((prev) => moveTask(prev, from, to, new Date().toISOString()));
-  }, []);
+  const handleReorder = useCallback(({ from, to }: ReorderableListReorderEvent) => move(from, to), [move]);
 
+  // Временно: «+» сразу добавляет дело в конец. Ввод названия — вместе с экраном карточки.
   const handleAdd = useCallback(() => {
-    addedCount.current += 1;
-    const title = `Новое дело ${addedCount.current}`;
-    setTasks((prev) =>
-      [...prev, makeTask({ id: randomUUID(), title, position: positionAtEnd(prev), now: new Date().toISOString() })],
-    );
+    add(`Новое дело ${tasks.length + 1}`);
     setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
-  }, []);
+  }, [add, tasks.length]);
 
   const snackbarBottom = insets.bottom + sizes.snackbar.bottom;
   const fabBottom = lastDone
