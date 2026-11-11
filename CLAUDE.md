@@ -12,7 +12,7 @@
 - Устройства: в MVP только Android-телефон (Samsung Galaxy S24). iPhone, планшет и ПК в браузере — позже (`SPEC.md`, раздел «Устройства»).
 - Стек выбран: **React Native + Expo, TypeScript** (9 ноября 2026, обоснование в `SPEC.md`, раздел «Стек и архитектура»).
 - Структура и библиотеки согласованы (10 ноября 2026): expo-sqlite без ORM, Gesture Handler + Reanimated, react-native-reorderable-list, fractional-indexing, expo-router.
-- Скелет проекта создан на **Expo SDK 57**, не 58: Expo Go в Google Play пока поддерживает только SDK 57.
+- Скелет проекта на **Expo SDK 58** (11 ноября 2026 обновлён с 57: Expo Go в Google Play перешёл на SDK 58). Expo Go поддерживает только одну версию SDK — при его обновлении проект надо поднимать следом.
 - Следующий шаг: проверить скелет на S24 через Expo Go, затем прототип списка со свайпом и перетаскиванием.
 
 ## Структура кода
