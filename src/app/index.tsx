@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View, type FlatList } from 'react-native';
 import { Gesture } from 'react-native-gesture-handler';
@@ -11,6 +11,7 @@ import { tasksCountLabel } from '@/domain/plural';
 import type { Task } from '@/domain/task';
 import { useTheme } from '@/theme/useTheme';
 import { AddButton } from '@/ui/AddButton';
+import { openNewTask, openTask } from '@/ui/routes';
 import { TaskRow } from '@/ui/TaskRow';
 import { UndoSnackbar } from '@/ui/UndoSnackbar';
 
@@ -20,7 +21,7 @@ const UNDO_MS = 5000;
 export default function ListScreen() {
   const { colors, sizes } = useTheme();
   const insets = useSafeAreaInsets();
-  const { tasks, add, complete, restore, move } = useTasks();
+  const { tasks, complete, restore, move } = useTasks();
 
   // Прежняя версия последнего сделанного дела — для «Отменить».
   const [lastDone, setLastDone] = useState<Task | null>(null);
@@ -35,9 +36,19 @@ export default function ListScreen() {
     return () => clearTimeout(timer);
   }, [lastDone]);
 
-  const handleOpen = useCallback((id: string) => {
-    router.push({ pathname: '/task/[id]', params: { id } });
-  }, []);
+  const handleOpen = useCallback((id: string) => openTask(id), []);
+
+  // После «+» новое дело в конце списка — при возврате прокручиваем к нему.
+  const countBeforeAdd = useRef<number | null>(null);
+  useFocusEffect(
+    useCallback(() => {
+      const before = countBeforeAdd.current;
+      countBeforeAdd.current = null;
+      if (before !== null && tasks.length > before) {
+        setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
+      }
+    }, [tasks.length]),
+  );
 
   const handleDone = useCallback(
     (id: string) => {
@@ -55,11 +66,10 @@ export default function ListScreen() {
 
   const handleReorder = useCallback(({ from, to }: ReorderableListReorderEvent) => move(from, to), [move]);
 
-  // Временно: «+» сразу добавляет дело в конец. Ввод названия — вместе с экраном карточки.
   const handleAdd = useCallback(() => {
-    add(`Новое дело ${tasks.length + 1}`);
-    setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
-  }, [add, tasks.length]);
+    countBeforeAdd.current = tasks.length;
+    openNewTask();
+  }, [tasks.length]);
 
   const snackbarBottom = insets.bottom + sizes.snackbar.bottom;
   const fabBottom = lastDone

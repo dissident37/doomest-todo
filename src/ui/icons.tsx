@@ -19,6 +19,24 @@ export function CheckIcon({ color, size = 16 }: { color: string; size?: number }
   );
 }
 
+export function ChevronLeftIcon({ color, size = 20 }: { color: string; size?: number }) {
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          width: size * 0.5,
+          height: size * 0.5,
+          marginLeft: size * 0.2,
+          borderLeftWidth: 2,
+          borderBottomWidth: 2,
+          borderColor: color,
+          transform: [{ rotate: '45deg' }],
+        }}
+      />
+    </View>
+  );
+}
+
 export function PlusIcon({ color, size = 24 }: { color: string; size?: number }) {
   return (
     <View style={{ width: size, height: size }}>

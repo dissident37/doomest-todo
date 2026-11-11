@@ -14,13 +14,19 @@ type TasksContextValue = {
   // Дела, видимые сегодня, по порядку.
   tasks: Task[];
   findTask: (id: string) => Task | undefined;
-  add: (title: string) => Task;
+  // Новое дело встаёт в конец списка.
+  add: (title: string, extra?: Partial<Pick<Task, 'description' | 'isRecurring'>>) => Task;
+  update: (id: string, patch: TaskPatch) => void;
+  // «Удалить насовсем»: мягкое удаление (deleted = true).
+  remove: (id: string) => void;
   // «Сделано». Возвращает прежнюю версию дела — для «Отменить».
   complete: (id: string) => Task | null;
   restore: (previous: Task) => void;
   // Перенос в видимом списке.
   move: (from: number, to: number) => void;
 };
+
+export type TaskPatch = Partial<Pick<Task, 'title' | 'description' | 'isRecurring'>>;
 
 const TasksContext = createContext<TasksContextValue | null>(null);
 
@@ -54,11 +60,36 @@ export function TasksProvider({ children }: { children: ReactNode }) {
   const findTask = useCallback((id: string) => allRef.current.find((t) => t.id === id), []);
 
   const add = useCallback(
-    (title: string) => {
-      const task = makeTask({ id: randomUUID(), title, position: positionAtEnd(allRef.current), now: nowIso() });
+    (title: string, extra?: Partial<Pick<Task, 'description' | 'isRecurring'>>) => {
+      const base = makeTask({ id: randomUUID(), title, position: positionAtEnd(allRef.current), now: nowIso() });
+      const task = { ...base, ...extra };
       saveTask(db, task);
       commit(upsertSorted(allRef.current, task));
       return task;
+    },
+    [db, commit],
+  );
+
+  const update = useCallback(
+    (id: string, patch: TaskPatch) => {
+      const current = allRef.current.find((t) => t.id === id);
+      if (!current) return;
+      const next: Task = { ...current, ...patch, updatedAt: nowIso() };
+      // Дело перестало быть ежедневным — больше не прячем его до завтра.
+      if (patch.isRecurring === false) next.hiddenUntil = null;
+      saveTask(db, next);
+      commit(upsertSorted(allRef.current, next));
+    },
+    [db, commit],
+  );
+
+  const remove = useCallback(
+    (id: string) => {
+      const current = allRef.current.find((t) => t.id === id);
+      if (!current) return;
+      const next: Task = { ...current, deleted: true, updatedAt: nowIso() };
+      saveTask(db, next);
+      commit(upsertSorted(allRef.current, next));
     },
     [db, commit],
   );
@@ -97,8 +128,8 @@ export function TasksProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo(
-    () => ({ tasks, findTask, add, complete, restore, move }),
-    [tasks, findTask, add, complete, restore, move],
+    () => ({ tasks, findTask, add, update, remove, complete, restore, move }),
+    [tasks, findTask, add, update, remove, complete, restore, move],
   );
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>;
