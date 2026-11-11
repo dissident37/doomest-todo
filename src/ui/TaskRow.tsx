@@ -15,6 +15,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import type { Task } from '@/domain/task';
 import { useTheme } from '@/theme/useTheme';
 
+import { hapticDragStart, hapticSwipeThreshold } from './haptics';
 import { CheckIcon, RepeatIcon } from './icons';
 
 // Доля ширины экрана, после которой отпущенная карточка засчитывается как «сделано».
@@ -38,10 +39,15 @@ export const TaskRow = memo(function TaskRow({ task, listPan, isDragging, onOpen
   const { width } = useWindowDimensions();
   const drag = useReorderableDrag();
   const translateX = useSharedValue(0);
+  const pastThreshold = useSharedValue(false);
 
   const { id } = task;
   const finish = useCallback(() => onDone(id), [onDone, id]);
   const open = useCallback(() => onOpen(id), [onOpen, id]);
+  const startDrag = useCallback(() => {
+    hapticDragStart();
+    drag();
+  }, [drag]);
 
   const swipe = useMemo(
     () =>
@@ -52,6 +58,11 @@ export const TaskRow = memo(function TaskRow({ task, listPan, isDragging, onOpen
         .onUpdate((e) => {
           if (isDragging.value) return;
           translateX.value = e.translationX;
+          const past = Math.abs(e.translationX) > width * SWIPE_THRESHOLD;
+          if (past !== pastThreshold.value) {
+            pastThreshold.value = past;
+            scheduleOnRN(hapticSwipeThreshold);
+          }
         })
         .onEnd((e) => {
           const tx = translateX.value;
@@ -66,9 +77,10 @@ export const TaskRow = memo(function TaskRow({ task, listPan, isDragging, onOpen
           }
         })
         .onFinalize((_e, success) => {
+          pastThreshold.value = false;
           if (!success) translateX.value = withTiming(0, { duration: ANIMATION_MS });
         }),
-    [listPan, isDragging, translateX, width, finish],
+    [listPan, isDragging, translateX, pastThreshold, width, finish],
   );
 
   const cardStyle = useAnimatedStyle(() => ({ transform: [{ translateX: translateX.value }] }));
@@ -98,7 +110,7 @@ export const TaskRow = memo(function TaskRow({ task, listPan, isDragging, onOpen
         <Animated.View style={cardStyle}>
           <Pressable
             onPress={open}
-            onLongPress={drag}
+            onLongPress={startDrag}
             delayLongPress={LONG_PRESS_MS}
             style={[
               styles.card,
