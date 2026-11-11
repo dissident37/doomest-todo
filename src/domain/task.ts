@@ -10,3 +10,23 @@ export type Task = {
   createdAt: string; // ISO 8601
   updatedAt: string; // ISO 8601
 };
+
+export function makeTask(fields: {
+  id: string;
+  title: string;
+  position: string;
+  now: string;
+  isRecurring?: boolean;
+}): Task {
+  return {
+    id: fields.id,
+    title: fields.title,
+    description: '',
+    isRecurring: fields.isRecurring ?? false,
+    position: fields.position,
+    hiddenUntil: null,
+    deleted: false,
+    createdAt: fields.now,
+    updatedAt: fields.now,
+  };
+}
