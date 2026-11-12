@@ -79,6 +79,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c103574f-5b38-47d8-b085-55214c6bd241"
+      }
+    },
+    "owner": "dissident37"
   }
 }
