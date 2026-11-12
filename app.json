@@ -8,6 +8,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "android": {
+      "package": "com.doomesttodo.app",
       "adaptiveIcon": {
         "backgroundColor": "#2F5BD3",
         "foregroundImage": "./assets/android-icon-foreground.png",
