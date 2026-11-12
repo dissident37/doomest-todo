@@ -31,9 +31,10 @@ export const darkColors: ColorTokens = {
   text: '#F1F2F4',
   textSecondary: '#A3A9B3',
   accent: '#2F5BD3',
-  // В DESIGN.md для тёмной темы не заданы — пока как в светлой.
-  danger: '#B42318',
-  snackbarBackground: '#24262B',
+  // В DESIGN.md для тёмной темы не заданы — подобраны под тёмный фон:
+  // красный светлее, чтобы читался; плашка светлее фона, чтобы отделялась.
+  danger: '#F97066',
+  snackbarBackground: '#30333A',
   snackbarAction: '#A9C0FF',
 };
 

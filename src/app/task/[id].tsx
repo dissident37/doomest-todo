@@ -6,8 +6,6 @@ import {
   Pressable,
   StyleSheet,
   Switch,
-  Text,
-  TextInput,
   View,
   type TextInputInstance,
 } from 'react-native';
@@ -15,6 +13,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { useTasks } from '@/data/TasksProvider';
 import { useTheme } from '@/theme/useTheme';
+import { Text, TextInput } from '@/ui/AppText';
 import { ChevronLeftIcon } from '@/ui/icons';
 import { NEW_TASK_ID } from '@/ui/routes';
 import { useKeyboardVisible } from '@/ui/useKeyboardVisible';
@@ -37,7 +36,7 @@ export default function TaskScreen() {
   const [description, setDescription] = useState(task?.description ?? '');
   const [isRecurring, setIsRecurring] = useState(task?.isRecurring ?? false);
   const descriptionRef = useRef<TextInputInstance>(null);
-  const deletingRef = useRef(false);
+  const [deleting, setDeleting] = useState(false);
 
   const back = (
     <Pressable
@@ -52,7 +51,7 @@ export default function TaskScreen() {
   );
 
   if (taskId && !task) {
-    if (deletingRef.current) return null;
+    if (deleting) return null;
     return (
       <SafeAreaView style={[styles.root, { paddingHorizontal: sizes.listPadding }]}>
         {back}
@@ -95,7 +94,7 @@ export default function TaskScreen() {
         text: 'Удалить',
         style: 'destructive',
         onPress: () => {
-          deletingRef.current = true;
+          setDeleting(true);
           remove(taskId);
           router.back();
         },

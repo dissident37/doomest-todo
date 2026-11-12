@@ -9,9 +9,8 @@
     "userInterfaceStyle": "automatic",
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#2F5BD3",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
@@ -19,8 +18,63 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-font",
-      "expo-sharing"
+      [
+        "expo-font",
+        {
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "Inter",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Inter-Regular.ttf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/Inter-Medium.ttf",
+                    "weight": 500
+                  },
+                  {
+                    "path": "./assets/fonts/Inter-SemiBold.ttf",
+                    "weight": 600
+                  },
+                  {
+                    "path": "./assets/fonts/Inter-Bold.ttf",
+                    "weight": 700
+                  }
+                ]
+              }
+            ]
+          },
+          "ios": {
+            "fonts": [
+              "./assets/fonts/Inter-Regular.ttf",
+              "./assets/fonts/Inter-Medium.ttf",
+              "./assets/fonts/Inter-SemiBold.ttf",
+              "./assets/fonts/Inter-Bold.ttf"
+            ]
+          }
+        }
+      ],
+      "expo-sharing",
+      [
+        "expo-navigation-bar",
+        {
+          "enforceContrast": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F2F3F5",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 120,
+          "dark": {
+            "backgroundColor": "#111214",
+            "image": "./assets/splash-icon.png"
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

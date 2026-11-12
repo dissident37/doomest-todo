@@ -1,79 +1,49 @@
-// Простые линейные иконки из View (stroke 2), чтобы пока не тянуть библиотеку иконок.
-import { StyleSheet, View } from 'react-native';
+// Линейные иконки (DESIGN.md: stroke 2px, без эмодзи). Сетка 24×24.
+import Svg, { Circle, Path } from 'react-native-svg';
 
-export function CheckIcon({ color, size = 16 }: { color: string; size?: number }) {
+type IconProps = { color: string; size?: number };
+
+function Stroke({ color, size = 24, d }: IconProps & { d: string }) {
   return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <View
-        style={{
-          width: size * 0.45,
-          height: size * 0.85,
-          marginTop: -size * 0.2,
-          borderRightWidth: 2,
-          borderBottomWidth: 2,
-          borderColor: color,
-          transform: [{ rotate: '45deg' }],
-        }}
-      />
-    </View>
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d={d} stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
   );
 }
 
-export function ChevronLeftIcon({ color, size = 20 }: { color: string; size?: number }) {
-  return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <View
-        style={{
-          width: size * 0.5,
-          height: size * 0.5,
-          marginLeft: size * 0.2,
-          borderLeftWidth: 2,
-          borderBottomWidth: 2,
-          borderColor: color,
-          transform: [{ rotate: '45deg' }],
-        }}
-      />
-    </View>
-  );
+export function CheckIcon({ color, size = 20 }: IconProps) {
+  return <Stroke color={color} size={size} d="M4.5 12.5l5 5L19.5 7" />;
 }
 
-export function DotsIcon({ color, size = 20 }: { color: string; size?: number }) {
-  const dot = { width: 4, height: 4, borderRadius: 2, backgroundColor: color };
-  return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', gap: 3 }}>
-      <View style={dot} />
-      <View style={dot} />
-      <View style={dot} />
-    </View>
-  );
+export function PlusIcon({ color, size = 28 }: IconProps) {
+  return <Stroke color={color} size={size} d="M12 5v14M5 12h14" />;
 }
 
-export function PlusIcon({ color, size = 24 }: { color: string; size?: number }) {
-  return (
-    <View style={{ width: size, height: size }}>
-      <View style={[styles.bar, { backgroundColor: color, width: size, height: 2.5, top: (size - 2.5) / 2 }]} />
-      <View style={[styles.bar, { backgroundColor: color, width: 2.5, height: size, left: (size - 2.5) / 2 }]} />
-    </View>
-  );
+export function ChevronLeftIcon({ color, size = 22 }: IconProps) {
+  return <Stroke color={color} size={size} d="M15 5l-7 7 7 7" />;
 }
 
-// Временная замена «круговых стрелок» у ежедневных дел: незамкнутый круг.
-export function RepeatIcon({ color, size = 16 }: { color: string; size?: number }) {
+// «Круговые стрелки» у ежедневных дел.
+export function RepeatIcon({ color, size = 18 }: IconProps) {
   return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        borderWidth: 2,
-        borderColor: color,
-        borderTopColor: 'transparent',
-        transform: [{ rotate: '45deg' }],
-      }}
+    <Stroke
+      color={color}
+      size={size}
+      d={
+        'M19.05 9.43A7.5 7.5 0 0 0 4.95 9.43M4 5.9l.95 3.53 2.95-2.07' +
+        'M4.95 14.57a7.5 7.5 0 0 0 14.1 0M20 18.1l-.95-3.53-2.95 2.07'
+      }
     />
   );
 }
 
-const styles = StyleSheet.create({
-  bar: { position: 'absolute', borderRadius: 2 },
-});
+// ⋮ — кнопка меню.
+export function DotsIcon({ color, size = 24 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Circle cx={12} cy={5} r={1.8} fill={color} />
+      <Circle cx={12} cy={12} r={1.8} fill={color} />
+      <Circle cx={12} cy={19} r={1.8} fill={color} />
+    </Svg>
+  );
+}

@@ -48,15 +48,23 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     setAll(next);
   }, []);
 
-  // Новый день пересчитывается при каждом возврате в приложение (SPEC.md, «Что учесть на Android»).
+  // Новый день: при каждом возврате в приложение (SPEC.md, «Что учесть на Android»)
+  // и раз в минуту, пока оно открыто, — ежедневные дела возвращаются в полночь без перезапуска.
   useEffect(() => {
-    const sub = AppState.addEventListener('change', (state) => {
-      if (state !== 'active') return;
+    const refreshToday = () => {
       const date = localDate();
+      if (date === todayRef.current) return;
       todayRef.current = date;
       setToday(date);
+    };
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') refreshToday();
     });
-    return () => sub.remove();
+    const timer = setInterval(refreshToday, 60_000);
+    return () => {
+      sub.remove();
+      clearInterval(timer);
+    };
   }, []);
 
   const tasks = useMemo(() => all.filter((t) => isVisible(t, today)), [all, today]);

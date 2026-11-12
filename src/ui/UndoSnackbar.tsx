@@ -1,8 +1,9 @@
 // Плашка после свайпа: «Название» — сделано, кнопка «Отменить».
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
 import { useTheme } from '@/theme/useTheme';
+import { Text } from '@/ui/AppText';
 
 type Props = {
   title: string;

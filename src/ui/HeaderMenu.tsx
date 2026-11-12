@@ -1,7 +1,8 @@
 // Меню по кнопке ⋮ (DESIGN.md, экран 4): затемнение и выпадающее меню.
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/theme/useTheme';
+import { Text } from '@/ui/AppText';
 
 type Props = {
   visible: boolean;

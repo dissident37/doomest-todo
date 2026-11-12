@@ -1,7 +1,7 @@
 // Карточка дела в списке: нажатие — открыть, удержание — перетаскивание,
 // свайп влево или вправо — «сделано».
 import { memo, useCallback, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector, type LegacyPanGesture } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -15,6 +15,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import type { Task } from '@/domain/task';
 import { useTheme } from '@/theme/useTheme';
 
+import { Text } from './AppText';
 import { hapticDragStart, hapticSwipeThreshold } from './haptics';
 import { CheckIcon, RepeatIcon } from './icons';
 

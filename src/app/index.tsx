@@ -1,6 +1,6 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View, type FlatList } from 'react-native';
+import { Alert, Pressable, StyleSheet, View, type FlatList } from 'react-native';
 import { Gesture } from 'react-native-gesture-handler';
 import { LinearTransition, useSharedValue } from 'react-native-reanimated';
 import ReorderableList, { type ReorderableListReorderEvent } from 'react-native-reorderable-list';
@@ -14,6 +14,7 @@ import { tasksCountLabel } from '@/domain/plural';
 import type { Task } from '@/domain/task';
 import { useTheme } from '@/theme/useTheme';
 import { AddButton } from '@/ui/AddButton';
+import { Text } from '@/ui/AppText';
 import { HeaderMenu } from '@/ui/HeaderMenu';
 import { DotsIcon } from '@/ui/icons';
 import { openNewTask, openTask } from '@/ui/routes';
@@ -170,6 +171,9 @@ export default function ListScreen() {
         // PanGesture, который в Gesture Handler 3 стал другим типом. Приведение — только для TS.
         panGesture={listPan as never}
         itemLayoutAnimation={LinearTransition.duration(200)}
+        ListEmptyComponent={
+          <Text style={[styles.empty, { color: colors.textSecondary }]}>Дел нет. Нажми «+», чтобы добавить.</Text>
+        }
         contentContainerStyle={{
           paddingHorizontal: sizes.listPadding,
           paddingTop: sizes.cardGap * 2,
@@ -191,6 +195,7 @@ const styles = StyleSheet.create({
   headerText: { flex: 1 },
   menuButton: { alignItems: 'center', justifyContent: 'center', marginRight: -8 },
   title: { fontWeight: '700' },
+  empty: { fontSize: 16, textAlign: 'center', marginTop: 48 },
 });
 
 function errorText(e: unknown): string {
