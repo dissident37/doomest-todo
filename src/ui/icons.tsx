@@ -37,6 +37,17 @@ export function ChevronLeftIcon({ color, size = 20 }: { color: string; size?: nu
   );
 }
 
+export function DotsIcon({ color, size = 20 }: { color: string; size?: number }) {
+  const dot = { width: 4, height: 4, borderRadius: 2, backgroundColor: color };
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', gap: 3 }}>
+      <View style={dot} />
+      <View style={dot} />
+      <View style={dot} />
+    </View>
+  );
+}
+
 export function PlusIcon({ color, size = 24 }: { color: string; size?: number }) {
   return (
     <View style={{ width: size, height: size }}>

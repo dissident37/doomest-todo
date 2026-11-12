@@ -8,7 +8,7 @@ import { positionAtEnd, repositionTask, upsertSorted } from '@/domain/order';
 import { makeTask, type Task } from '@/domain/task';
 
 import { openDb } from './db';
-import { loadActiveTasks, saveTask } from './taskRepo';
+import { loadActiveTasks, replaceAllTasks, saveTask } from './taskRepo';
 
 type TasksContextValue = {
   // Дела, видимые сегодня, по порядку.
@@ -24,6 +24,10 @@ type TasksContextValue = {
   restore: (previous: Task) => void;
   // Перенос в видимом списке.
   move: (from: number, to: number) => void;
+  // Все неудалённые дела, включая скрытые до завтра, — для экспорта.
+  allTasks: () => Task[];
+  // Импорт: заменить весь список.
+  replaceAll: (tasks: readonly Task[]) => void;
 };
 
 export type TaskPatch = Partial<Pick<Task, 'title' | 'description' | 'isRecurring'>>;
@@ -127,9 +131,19 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     [db, commit],
   );
 
+  const allTasks = useCallback(() => allRef.current, []);
+
+  const replaceAll = useCallback(
+    (imported: readonly Task[]) => {
+      replaceAllTasks(db, imported, nowIso());
+      commit(loadActiveTasks(db));
+    },
+    [db, commit],
+  );
+
   const value = useMemo(
-    () => ({ tasks, findTask, add, update, remove, complete, restore, move }),
-    [tasks, findTask, add, update, remove, complete, restore, move],
+    () => ({ tasks, findTask, add, update, remove, complete, restore, move, allTasks, replaceAll }),
+    [tasks, findTask, add, update, remove, complete, restore, move, allTasks, replaceAll],
   );
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>;

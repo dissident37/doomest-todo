@@ -36,6 +36,14 @@ export function loadActiveTasks(db: SQLiteDatabase): Task[] {
     .map(toTask);
 }
 
+// Импорт: текущие дела помечаются удалёнными, дела из файла записываются поверх. Одна транзакция.
+export function replaceAllTasks(db: SQLiteDatabase, tasks: readonly Task[], now: string): void {
+  db.withTransactionSync(() => {
+    db.runSync('UPDATE tasks SET deleted = 1, updated_at = ? WHERE deleted = 0', [now]);
+    for (const task of tasks) saveTask(db, { ...task, deleted: false });
+  });
+}
+
 export function saveTask(db: SQLiteDatabase, task: Task): void {
   db.runSync(
     `INSERT INTO tasks (id, title, description, is_recurring, position, hidden_until, deleted, created_at, updated_at)
